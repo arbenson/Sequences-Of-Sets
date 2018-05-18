@@ -42,7 +42,7 @@ include("learn_CRU_model.jl")
 dataset = "email-Enron-core"  # data file at data/$dataset.txt
 p = 0.9                       # correlation probability
 # Learning takes several minutes
-learn(dataset, p)  # --> model saved to output/$dataset-$p.mat
+learn(dataset, p)  # --> model saved to models/$dataset-CRU-$p.mat
 ```
 
 All of the learned CRU models used in the paper are pre-computed and saved in the `output/` directory.
@@ -55,7 +55,7 @@ We use a "flattened" model as the baseline.
 include("learn_flattened_model.jl")
 dataset = "email-Enron-core"  # data file at data/$dataset.txt
 # Learning takes several minutes
-learn(dataset)  # --> model saved to output/$dataset-flattened.mat
+learn(dataset)  # --> model saved to models/$dataset-flattened.mat
 ```
 
 

@@ -234,10 +234,10 @@ function recency_bias_fig()
 end
 
 read_CRU_model(dataset::AbstractString, p::Float64) =
-    matread("output/$dataset-CRU-$(p).mat")
+    matread("models/$dataset-CRU-$(p).mat")
 
 read_flattened_model(dataset::AbstractString) =
-    matread("output/$dataset-flattened.mat")
+    matread("models/$dataset-flattened.mat")
 
 # Likelihoods
 function likelihoods(dataset::String)
