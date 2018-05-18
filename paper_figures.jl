@@ -1,5 +1,6 @@
 include("common.jl")
 
+using MAT
 using PyPlot
 using StatsBase: countmap
 
@@ -231,4 +232,85 @@ function recency_bias_fig()
 
     show()
 end
+
+read_CRU_model(dataset::AbstractString, p::Float64) =
+    matread("output/$dataset-CRU-$(p).mat")
+
+read_flattened_model(dataset::AbstractString) =
+    matread("output/$dataset-flattened.mat")
+
+# Likelihoods
+function likelihoods(dataset::String)
+    close()
+    ps = [0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.99]
+    function rel_likelihoods()
+        per_choice_likelihoods = Float64[]
+        for p in ps
+            data = read_CRU_model(dataset, p)
+            push!(per_choice_likelihoods, exp(data["log_likelihood"] / data["total_choices"]))
+        end
+        return per_choice_likelihoods
+    end
+
+    function rel_likelihood_flattened()
+        data = read_flattened_model(dataset)
+        return exp(data["log_likelihood"] / data["total_choices"])
+    end
+
+    fsz = 24
+    plot(ps, rel_likelihoods(), lw=2, ms=8, marker="s", label="CRU model")
+    plot(ps, ones(Float64, length(ps)) * rel_likelihood_flattened(),
+         lw=2, ms=8, marker="x", label="baseline model")    
+    xlabel("p", fontsize=fsz)
+    ylabel("Mean per-set likelihood", fontsize=fsz)
+    ax = gca()
+    ax[:set_xticks]([0.0, 0.2, 0.4, 0.6, 0.8, 1.0])
+    ax[:tick_params](axis="both", labelsize=fsz, length=7, width=1.5)
+    if dataset == "contact-prim-school"
+        legend(frameon=false, fontsize=fsz, labelspacing=0.2)
+    end
+    title(dataset, fontsize=fsz)
+    tight_layout()
+    savefig("$dataset-rel-likelihoods.pdf")
+    show()
+end
+
+# Recency weights
+function recency_weights_fig(dataset::String)
+    close()
+    function binning(vec::Vector{Float64})
+        first = vec[1:10]
+        bin_means = convert(Vector{Float64}, collect(1:10))
+        bin_vals = copy(vec[1:10])
+        bins = [10; [round(Int64, v) for v in logspace(log10(11),log10(200),20)]]
+        for i = 2:length(bins)
+            ran = collect((bins[i - 1] + 1):bins[i])
+            push!(bin_means, mean(ran))
+            push!(bin_vals, mean(vec[ran]))
+        end
+        return bin_means, bin_vals
+    end
+    ps = [0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.99]    
+    fsz = 24
+    for p in ps
+        data = read_CRU_model(dataset, p)
+        recency_weights = data["w"][1:200]
+        x, y = binning(recency_weights)
+        loglog(x, y, marker="o", lw=0.75, ms=4, label="$p")
+    end
+    if dataset == "contact-high-school"
+        legend(frameon=false, fontsize=fsz-6, ncol=2, columnspacing=0.2,
+               labelspacing=0.2, handletextpad=0.1)
+    end
+    xlabel("index", fontsize=fsz)
+    ylabel("Recency weight w", fontsize=fsz)
+    title(dataset, fontsize=fsz)
+    ax = gca()
+    ax[:tick_params](axis="both", labelsize=fsz, length=7, width=1.5)
+    ax[:tick_params](axis="both", which="minor", length=4, width=1)
+    tight_layout()        
+    savefig("weights-$dataset.pdf")
+    show()
+end
+
 ;

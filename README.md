@@ -1,8 +1,12 @@
 # Sequences of Sets
 
+This code and data repository accompanies the paper
 
+- [Sequences of Sets](http://cs.cornell.edu/~arb/sequences-of-sets-KDD-2018.pdf). Austin R. Benson, Ravi Kumar, and Andrew Tomkins. Proceedings of the 24th ACM SIGKDD International Conference on Knowledge Discovery and Data Mining (KDD '18'), 2018.
 
+All of the code is written in Julia.
 
+For questions, please email Austin at arb@cs.cornell.edu.
 
 ### Data
 
@@ -29,7 +33,30 @@ bash-3.2$ head -5 email-Enron-core-element-labels.txt
 
 ### Learning models
 
+##### Correlated Repeated Unions (CRU) model
 
+We first show how to learn the Correlated Repeated Unions (CRU) model. The learning has some built-in parallelism, which you can use by setting the JULIA_NUM_THREADS environment variable.
+
+```julia
+include("learn_CRU_model.jl")
+dataset = "email-Enron-core"  # data file at data/$dataset.txt
+p = 0.9                       # correlation probability
+# Learning takes several minutes
+learn(dataset, p)  # --> model saved to output/$dataset-$p.mat
+```
+
+All of the learned CRU models used in the paper are pre-computed and saved in the `output/` directory.
+
+##### Flattened model
+
+We use a "flattened" model as the baseline.
+
+```julia
+include("learn_flattened_model.jl")
+dataset = "email-Enron-core"  # data file at data/$dataset.txt
+# Learning takes several minutes
+learn(dataset)  # --> model saved to output/$dataset-flattened.mat
+```
 
 
 
@@ -69,12 +96,20 @@ recency_bias_fig()  # --> recency_bias.pdf
 
 ```julia
 include("paper_figures.jl")
+for row in dataset_info()
+    dataset = row[1]
+    recency_weights_fig(dataset)  # --> $dataset-rel-likelihoods.pdf
+end
 ```
 
 ##### Figure 6: Recency weights.
 
 ```julia
 include("paper_figures.jl")
+for row in dataset_info()
+    dataset = row[1]
+    recency_weights_fig(dataset)  # --> weights-$dataset.pdf
+end
 ```
 
 ##### Table 1: Summary statistics of datasets. 
