@@ -1,6 +1,7 @@
 # Common utility code
 
-const SetSequences = Vector{Vector{Set{Int32}}}
+const SetSequence = Vector{Set{Int32}}
+const SetSequences = Vector{SetSequence}
 
 struct SequenceData
     sequence::Vector{Int32}
@@ -42,7 +43,22 @@ end
 
 read_packed_data(dataset::AbstractString) =
     pack_data(read_data(dataset))
-    
+
+function packed_repeat_set_seqs(seqs::SetSequences)
+    repeat_seqs = SetSequences()
+    for seq in seqs
+        # form list
+        univ = Set{Int32}()
+        user_same_seq = SetSequence()
+        for subset in seq
+            push!(user_same_seq, univ ∩ subset)
+            univ = univ ∪ subset
+        end
+        push!(repeat_seqs, user_same_seq)
+    end
+    return pack_data(repeat_seqs)
+end
+
 function dataset_info()
     return [["tags-mathoverflow",   "o"],
             ["tags-math-sx",        "o"],
@@ -53,3 +69,4 @@ function dataset_info()
             ["coauth-Business",     "<"],
             ["coauth-Geology",      "<"]]
 end
+;

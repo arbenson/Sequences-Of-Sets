@@ -227,6 +227,8 @@ function recency_bias_fig()
     ax[:tick_params](axis="both", labelsize=fsz, length=7, width=1.5)
     xlabel("Position prior (k)", fontsize=fsz)
     ylabel("Relative Jaccard index k back", fontsize=fsz)
-    savefig("recency_bias.pdf", bbox_inches="tight")    
+    savefig("recency_bias.pdf", bbox_inches="tight")
+
+    show()
 end
 ;
