@@ -98,7 +98,7 @@ recency_bias_fig()  # --> recency_bias.pdf
 include("paper_figures.jl")
 for row in dataset_info()
     dataset = row[1]
-    recency_weights_fig(dataset)  # --> $dataset-rel-likelihoods.pdf
+    likelihoods_fig(dataset)  # --> $dataset-rel-likelihoods.pdf
 end
 ```
 

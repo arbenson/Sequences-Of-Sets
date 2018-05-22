@@ -40,7 +40,6 @@ end
 function repeat_behavior_fig()
     close()
     fsz=12
-
     function adjust_axis(ax, ylabel::String)
         ax[:set_xlabel]("Set size", fontsize=fsz)
         ax[:set_ylabel](ylabel, fontsize=fsz)
@@ -240,7 +239,7 @@ read_flattened_model(dataset::AbstractString) =
     matread("models/$dataset-flattened.mat")
 
 # Likelihoods
-function likelihoods(dataset::String)
+function likelihoods_fig(dataset::String)
     close()
     ps = [0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.99]
     function rel_likelihoods()
