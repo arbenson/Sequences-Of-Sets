@@ -6,7 +6,9 @@ using StatsBase: countmap
 
 # Distribution of set sizes
 function set_size_dist_fig()
-    close()
+    figure()
+    PyPlot.matplotlib[:rc]("pdf", use14corefonts=true)
+    PyPlot.matplotlib[:rc]("text", usetex=true)
     for row in dataset_info()
         dataset = row[1]
         packed_seqs = read_packed_data(dataset)
@@ -38,7 +40,6 @@ end
 
 # Repeat behavior
 function repeat_behavior_fig()
-    close()
     fsz=12
     function adjust_axis(ax, ylabel::String)
         ax[:set_xlabel]("Set size", fontsize=fsz)
@@ -50,7 +51,10 @@ function repeat_behavior_fig()
 
     info = dataset_info()
     all_seqs = [read_data(row[1]) for row in info]
-
+    
+    figure()
+    PyPlot.matplotlib[:rc]("pdf", use14corefonts=true)
+    PyPlot.matplotlib[:rc]("text", usetex=true)
     # Exact repeats
     subplot(221)
     for (ind, row) in enumerate(info)
@@ -148,7 +152,9 @@ function repeat_behavior_fig()
 end
 
 function num_repeats_dist_fig()
-    close()
+    figure()
+    PyPlot.matplotlib[:rc]("pdf", use14corefonts=true)
+    PyPlot.matplotlib[:rc]("text", usetex=true)
     for row in dataset_info()
         dataset = row[1]
         seqs = read_data(dataset)
@@ -179,8 +185,6 @@ function num_repeats_dist_fig()
 end
 
 function recency_bias_fig()
-    close()
-
     # jaccard similarity of two sets
     function jaccard(A::Set{Int32}, B::Set{Int32})
         nAB = length(A ∩ B)
@@ -211,6 +215,9 @@ function recency_bias_fig()
         return recency_jaccards
     end
 
+    figure()
+    PyPlot.matplotlib[:rc]("pdf", use14corefonts=true)
+    PyPlot.matplotlib[:rc]("text", usetex=true)
     ks = collect(1:10)
     for row in dataset_info()
         dataset = row[1]
@@ -240,7 +247,6 @@ read_flattened_model(dataset::AbstractString) =
 
 # Likelihoods
 function likelihoods_fig(dataset::String)
-    close()
     ps = [0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.99]
     function rel_likelihoods()
         per_choice_likelihoods = Float64[]
@@ -256,6 +262,9 @@ function likelihoods_fig(dataset::String)
         return exp(data["log_likelihood"] / data["total_choices"])
     end
 
+    figure()
+    PyPlot.matplotlib[:rc]("pdf", use14corefonts=true)
+    PyPlot.matplotlib[:rc]("text", usetex=true)
     fsz = 24
     plot(ps, rel_likelihoods(), lw=2, ms=8, marker="s", label="CRU model")
     plot(ps, ones(Float64, length(ps)) * rel_likelihood_flattened(),
@@ -276,7 +285,6 @@ end
 
 # Recency weights
 function recency_weights_fig(dataset::String)
-    close()
     function binning(vec::Vector{Float64})
         first = vec[1:10]
         bin_means = convert(Vector{Float64}, collect(1:10))
@@ -289,6 +297,10 @@ function recency_weights_fig(dataset::String)
         end
         return bin_means, bin_vals
     end
+
+    figure()
+    PyPlot.matplotlib[:rc]("pdf", use14corefonts=true)
+    PyPlot.matplotlib[:rc]("text", usetex=true)
     ps = [0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.99]    
     fsz = 24
     for p in ps
@@ -311,5 +323,4 @@ function recency_weights_fig(dataset::String)
     savefig("weights-$dataset.pdf")
     show()
 end
-
 ;
