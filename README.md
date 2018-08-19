@@ -74,7 +74,7 @@ set_size_dist_fig()  # --> set_size_dist.pdf
 ```julia
 include("paper_figures.jl")
 # The following takes a minute or so
-repeat_behavior_fig()  # --> repeat-behavior.pdf
+repeat_behavior_fig()  # --> repeat_behavior.pdf
 ```
 
 ##### Figure 3: Distribution of the number of repeatss in sets containing at least one repeat.
