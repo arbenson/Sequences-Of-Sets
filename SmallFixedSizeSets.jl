@@ -143,4 +143,4 @@ function SFSS_union(A::SmallFixedSizeSet, B::SmallFixedSizeSet)
     end
     return SFSSFromOrderedVec(union_vec)
 end
-
+;

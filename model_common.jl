@@ -10,3 +10,4 @@ function simplex_projection(v::Vector{Float64}, z::Float64=1.0,
     ret = max.(ret, minval)
     return ret / sum(ret)
 end
+;
