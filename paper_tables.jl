@@ -3,7 +3,6 @@ include("SmallFixedSizeSets.jl")
 
 using Combinatorics
 using DataStructures: counter
-using Printf
 
 # Summary statistics of a dataset.
 function summary_stats(dataset::String)
