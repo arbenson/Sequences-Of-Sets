@@ -1,10 +1,10 @@
 include("common.jl")
 include("model_common.jl")
+include("SmallFixedSizeSets.jl")
 
 using Base.Threads
 using Combinatorics
 using MAT
-using SmallFixedSizeSets
 
 # maximum look back for repeats
 const MAX_BACK = 200
