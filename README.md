@@ -4,7 +4,7 @@ This code and data repository accompanies the paper
 
 - [Sequences of Sets](http://cs.cornell.edu/~arb/sequences-of-sets-KDD-2018.pdf). Austin R. Benson, Ravi Kumar, and Andrew Tomkins. Proceedings of the 24th ACM SIGKDD International Conference on Knowledge Discovery and Data Mining (KDD '18'), 2018.
 
-All of the code is written in Julia.
+All of the code is written in Julia 1.0.
 
 For questions, please email Austin at arb@cs.cornell.edu.
 
@@ -31,6 +31,21 @@ bash-3.2$ head -5 email-Enron-core-element-labels.txt
 
 
 
+### Setup
+
+The code uses Julia 1.0. To re-run all of the experiments, you need the following packages:
+
+```julia
+using Pkg
+Pkg.add("Combinatorics")
+Pkg.add("DataStructures")
+Pkg.add("FileIO")
+Pkg.add("JLD2")
+Pkg.add("PyPlot")
+```
+
+
+
 ### Learning models
 
 ##### Correlated Repeated Unions (CRU) model
@@ -42,7 +57,7 @@ include("learn_CRU_model.jl")
 dataset = "email-Enron-core"  # data file at data/$dataset.txt
 p = 0.9                       # correlation probability
 # Learning takes several minutes
-learn(dataset, p)  # --> model saved to models/$dataset-CRU-$p.mat
+learn(dataset, p)  # --> model saved to models/$dataset-CRU-$p.jld2
 ```
 
 All of the learned CRU models used in the paper are pre-computed and saved in the `output/` directory.
@@ -55,7 +70,7 @@ We use a "flattened" model as the baseline.
 include("learn_flattened_model.jl")
 dataset = "email-Enron-core"  # data file at data/$dataset.txt
 # Learning takes several minutes
-learn(dataset)  # --> model saved to models/$dataset-flattened.mat
+learn(dataset)  # --> model saved to models/$dataset-flattened.jld2
 ```
 
 

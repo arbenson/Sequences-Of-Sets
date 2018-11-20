@@ -3,6 +3,9 @@ include("SmallFixedSizeSets.jl")
 
 using Combinatorics
 using DataStructures: counter
+using Printf
+using Random
+using Statistics
 
 # Summary statistics of a dataset.
 function summary_stats(dataset::String)
@@ -53,15 +56,15 @@ function correlation_behavior(dataset::String, num_rand_samples::Int64=100)
     packed_seqs = read_packed_data(dataset)
     
     w2, w3 = Int64[], Int64[]
-    w2_null = Vector{Vector{Int64}}(num_rand_samples)
-    w3_null = Vector{Vector{Int64}}(num_rand_samples)
+    w2_null = Vector{Vector{Int64}}(undef, num_rand_samples)
+    w3_null = Vector{Vector{Int64}}(undef, num_rand_samples)
     for j in 1:num_rand_samples
         w2_null[j], w3_null[j] = Vector{Int64}(), Vector{Int64}()
     end        
     
     for (ind, seq) in enumerate(packed_seqs)
-        print(@sprintf("%d of %d \r", ind, length(packed_seqs)))
-        flush(STDOUT)
+        @printf("%d of %d \r", ind, length(packed_seqs))
+        flush(stdout)
         sz2, sz3 = Int64[], Int64[]
         itm2, itm3 = Int64[], Int64[]
         curr_ind = 1
@@ -87,12 +90,12 @@ function correlation_behavior(dataset::String, num_rand_samples::Int64=100)
         end
     end
 
-    println(@sprintf("mean (2): %f", mean(w2)))
-    println(@sprintf("mean (3): %f", mean(w3)))
+    @printf("mean (2): %f\n", mean(w2))
+    @printf("mean (3): %f\n", mean(w3))
     m2 = [mean(w2_null[j]) for j in 1:num_rand_samples]
     m3 = [mean(w3_null[j]) for j in 1:num_rand_samples]
-    println(@sprintf("mean, null (2): %f +/- %f", mean(m2), std(m2)))
-    println(@sprintf("mean, null (3): %f +/- %f", mean(m3), std(m3)))
+    @printf("mean, null (2): %f +/- %f\n", mean(m2), std(m2))
+    @printf("mean, null (3): %f +/- %f\n", mean(m3), std(m3))
     println("------")
 end
 ;
