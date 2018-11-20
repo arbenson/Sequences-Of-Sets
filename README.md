@@ -33,6 +33,12 @@ bash-3.2$ head -5 email-Enron-core-element-labels.txt
 
 ### Setup
 
+First, download the repository:
+
+```bash
+git clone https://github.com/arbenson/FGDnPVC
+```
+
 The code uses Julia 1.0. To re-run all of the experiments, you need the following packages:
 
 ```julia
