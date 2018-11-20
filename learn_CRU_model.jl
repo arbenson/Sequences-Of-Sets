@@ -1,10 +1,7 @@
 include("common.jl")
-include("model_common.jl")
 include("SmallFixedSizeSets.jl")
+include("model_common.jl")
 
-using Base.Threads
-using Combinatorics
-using MAT
 
 # maximum look back for repeats
 const MAX_BACK = 200
@@ -24,7 +21,7 @@ function unordered_partitions(A::Vector{Int64})
             for part_item in combinations(collect(1:s), part_size)
                 curr_set = Set{Int32}(A[part_item])
                 remainder = ones(Bool, s)
-                remainder[part_item] = false
+                remainder[part_item] .= false
                 # Recursion
                 for remaining_part in unordered_partitions(A[remainder])
                     push!(remaining_part, curr_set)
@@ -172,9 +169,9 @@ function log_likelihood(seqs::Vector{SequenceData},
         seq = seqs[ind]
         repeat_seq = repeat_seqs[ind]
         if Threads.threadid() == 1
-            print(@sprintf("%d of %d \r", ind, num_seqs))
+            @printf("%d of %d \r", ind, num_seqs)
+            flush(stdout)
         end
-        flush(STDOUT)
 
         local_choice_count = 0
         seq_ll = 0.0
@@ -222,7 +219,7 @@ function log_likelihood(seqs::Vector{SequenceData},
                     rel_weights = prob ./ weight_probs
                     local_gradient += part_gradient * rel_weights
                 else
-                    zero_inds = find(weight_probs .== 0.0)
+                    zero_inds = findall(weight_probs .== 0.0)
                     if length(zero_inds) == 1
                         zero_ind = zero_inds[1]
                         other_prob = 1.0
@@ -246,7 +243,7 @@ function log_likelihood(seqs::Vector{SequenceData},
         gradient[:, Threads.threadid()] += seq_gradient
     end
     
-    return sum(ll), vec(sum(gradient, 2)), sum(total_choices)
+    return sum(ll), vec(sum(gradient, dims=2)), sum(total_choices)
 end
 
 """
@@ -312,11 +309,11 @@ function learn(dataset::String, p::Float64,
         if step_size < min_step_size; break; end
     end
 
-    matwrite("output/$(dataset)-$(p).mat",
-             Dict("w"              => recency_weights,
-                  "p"              => p,
-                  "log_likelihood" => curr_ll,
-                  "iterations"     => iter,
-                  "total_choices"  => total_choices))
+    save("models/$(dataset)-CRU-$(p).jld2",
+         Dict("w"              => recency_weights,
+              "p"              => p,
+              "log_likelihood" => curr_ll,
+              "iterations"     => iter,
+              "total_choices"  => total_choices))
 end
 ;

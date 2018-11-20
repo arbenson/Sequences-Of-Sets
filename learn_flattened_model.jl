@@ -2,10 +2,6 @@ include("common.jl")
 include("SmallFixedSizeSets.jl")
 include("model_common.jl")
 
-using Base.Threads
-using Combinatorics
-using MAT
-
 const MAX_BACK = 200
 
 # Log-likelihood of the flattened model.
@@ -16,14 +12,14 @@ function log_likelihood(seqs::Vector{SequenceData},
     ll = zeros(Float64, Threads.nthreads())
     total_choices = zeros(Int64, Threads.nthreads())    
     num_seqs = length(seqs)
-    
-    for ind = 1:num_seqs        
+
+    Threads.@threads for ind = 1:num_seqs
         seq = seqs[ind]
         repeat_seq = repeat_seqs[ind]
         if Threads.threadid() == 1
-            print(@sprintf("%d of %d \r", ind, num_seqs))
+            @printf("%d of %d \r", ind, num_seqs)
+            flush(stdout)
         end
-        flush(STDOUT)
 
         local_choice_count = 0
         seq_ll = 0.0
@@ -96,7 +92,7 @@ function log_likelihood(seqs::Vector{SequenceData},
         gradient[:, Threads.threadid()] += seq_gradient
     end
     
-    return sum(ll), vec(sum(gradient, 2)), sum(total_choices)
+    return sum(ll), vec(sum(gradient, dims=2)), sum(total_choices)
 end
 
 """
@@ -160,10 +156,10 @@ function learn(dataset::AbstractString,
         if minimal_change; break; end
     end
 
-    matwrite("output/$(dataset)-flattened.mat",
-             Dict("w"              => recency_weights,
-                  "log_likelihood" => curr_ll,
-                  "iterations"     => iter,
-                  "total_choices"  => total_choices))
+    save("models/$(dataset)-flattened.jld2",
+         Dict("w"              => recency_weights,
+              "log_likelihood" => curr_ll,
+              "iterations"     => iter,
+              "total_choices"  => total_choices))
 end
 ;
