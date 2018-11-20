@@ -1,8 +1,20 @@
 include("common.jl")
 
-using MAT
+using FileIO
+using JLD2
 using PyPlot
-using StatsBase: countmap
+using Statistics
+
+function get_counts(sizes::Vector{Int64})
+    counter = Dict{Int64,Int64}()
+    for size in sizes
+        if   !haskey(counter, size); counter[size]  = 1
+        else                         counter[size] += 1
+        end
+    end
+    keyvals = sort([(k, v) for (k, v) in counter])
+    return [x[1] for x in keyvals], [x[2] for x in keyvals]
+end
 
 # Distribution of set sizes
 function set_size_dist_fig()
@@ -17,7 +29,7 @@ function set_size_dist_fig()
             curr_sizes = seq.sizes
             append!(all_sizes, curr_sizes[curr_sizes .> 0])
         end
-        nums, counts = zip(sort(countmap(all_sizes))...)
+        nums, counts = get_counts(all_sizes)
         tot = sum(counts)
         fracs = [count / tot for count in counts]
         @show nums, fracs
@@ -164,7 +176,7 @@ function num_repeats_dist_fig()
             curr_sizes = seq.sizes
             append!(all_sizes, curr_sizes[curr_sizes .> 0])
         end
-        nums, counts = zip(sort(countmap(all_sizes))...)
+        nums, counts = get_counts(all_sizes)        
         tot = sum(counts)
         fracs = [count / tot for count in counts]
         @show nums, fracs
@@ -208,7 +220,7 @@ function recency_bias_fig()
         recency_jaccards = Float64[]
         for k in ks
             print("$k of $(ks[end]) \r")
-            flush(STDOUT)
+            flush(stdout)
             sims = recency(seqs, k)
             push!(recency_jaccards, mean(sims))
         end
@@ -240,10 +252,10 @@ function recency_bias_fig()
 end
 
 read_CRU_model(dataset::AbstractString, p::Float64) =
-    matread("models/$dataset-CRU-$(p).mat")
+    load("models/$dataset-CRU-$(p).jld2")
 
 read_flattened_model(dataset::AbstractString) =
-    matread("models/$dataset-flattened.mat")
+    load("models/$dataset-flattened.jld2")
 
 # Likelihoods
 function likelihoods_fig(dataset::String)
@@ -289,7 +301,7 @@ function recency_weights_fig(dataset::String)
         first = vec[1:10]
         bin_means = convert(Vector{Float64}, collect(1:10))
         bin_vals = copy(vec[1:10])
-        bins = [10; [round(Int64, v) for v in logspace(log10(11),log10(200),20)]]
+        bins = [10; [round(Int64, v) for v in 10 .^ range(log10(11), stop=log10(200), length=20)]]
         for i = 2:length(bins)
             ran = collect((bins[i - 1] + 1):bins[i])
             push!(bin_means, mean(ran))
