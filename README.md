@@ -4,7 +4,7 @@ This code and data repository accompanies the paper
 
 - [Sequences of Sets](http://cs.cornell.edu/~arb/sequences-of-sets-KDD-2018.pdf). Austin R. Benson, Ravi Kumar, and Andrew Tomkins. Proceedings of the 24th ACM SIGKDD International Conference on Knowledge Discovery and Data Mining (KDD '18'), 2018.
 
-All of the code is written in Julia.
+All of the code is written in Julia 1.0.
 
 For questions, please email Austin at arb@cs.cornell.edu.
 
@@ -27,6 +27,21 @@ bash-3.2$ head -5 email-Enron-core-element-labels.txt
 3 harry.arora@enron.com
 4 robert.badeer@enron.com
 5 susan.bailey@enron.com
+```
+
+
+
+### Setup
+
+The code uses Julia 1.0. To re-run all of the experiments, you need the following packages:
+
+```julia
+using Pkg
+Pkg.add("Combinatorics")
+Pkg.add("DataStructures")
+Pkg.add("FileIO")
+Pkg.add("JLD2")
+Pkg.add("PyPlot")
 ```
 
 
